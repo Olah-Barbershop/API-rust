@@ -9,10 +9,10 @@ use dotenv::dotenv;
 #[macro_use]
 extern crate rocket;
 use rocket::{
-    http::{Method, Status},
-    Request,
+    fairing::{Fairing, Info, Kind},
+    http::{Header, Status},
+    Request, Response,
 };
-use rocket_cors::{AllowedOrigins, CorsOptions};
 
 use crate::controllers::contactinfo_controller::get_contactinfo;
 use crate::controllers::location_controller::get_locations;
@@ -27,7 +27,7 @@ fn default_catcher(status: Status, _: &Request) -> Option<CustomError> {
 }
 
 #[launch]
-fn rocket() -> _ {
+async fn rocket() -> _ {
     dotenv().ok();
     let uri = match env::var("DATABASE_URL") {
         Ok(v) => v.to_string(),
@@ -44,15 +44,32 @@ fn rocket() -> _ {
         Err(_) => panic!("Couldn't connect to database"),
     };
 
-    let cors = CorsOptions::default()
-        .allowed_origins(AllowedOrigins::all())
-        .allowed_methods(vec![Method::Get].into_iter().map(From::from).collect())
-        .allow_credentials(true);
+    pub struct CORS();
+
+    #[rocket::async_trait]
+    impl Fairing for CORS {
+        fn info(&self) -> Info {
+            Info {
+                name: "Add CORS headers to requests",
+                kind: Kind::Response,
+            }
+        }
+
+        async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+            response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+            response.set_header(Header::new(
+                "Access-Control-Allow-Methods",
+                "POST, GET, PATCH, OPTIONS",
+            ));
+            response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+            response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+        }
+    }
 
     rocket::build()
-        .attach(cors.to_cors().unwrap())
         .register("/", catchers![default_catcher])
         .manage(db)
+        .attach(CORS())
         .mount(
             "/",
             routes![
