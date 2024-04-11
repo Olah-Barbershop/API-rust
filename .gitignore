@@ -2,3 +2,4 @@
 .env
 certs.pem
 key.pem
+linux.tar.gz
