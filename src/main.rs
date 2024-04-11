@@ -8,7 +8,11 @@ use dotenv::dotenv;
 
 #[macro_use]
 extern crate rocket;
-use rocket::{http::Status, Request};
+use rocket::{
+    http::{Method, Status},
+    Request,
+};
+use rocket_cors::{AllowedOrigins, CorsOptions};
 
 use crate::controllers::contactinfo_controller::get_contactinfo;
 use crate::controllers::location_controller::get_locations;
@@ -39,7 +43,14 @@ fn rocket() -> _ {
         Ok(db) => db,
         Err(_) => panic!("Couldn't connect to database"),
     };
+
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .allowed_methods(vec![Method::Get].into_iter().map(From::from).collect())
+        .allow_credentials(true);
+
     rocket::build()
+        .attach(cors.to_cors().unwrap())
         .register("/", catchers![default_catcher])
         .manage(db)
         .mount(
