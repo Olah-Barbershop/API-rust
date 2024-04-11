@@ -46,7 +46,9 @@ I'm not sure if I'll be able to renew the API server, but it's guaranteed to be 
   - https://olahbarbershop.codes/notifications
     ```json
     {
-      "_id": "The notification ID (ObjectID)",
+      "_id": {
+        "$oid": "The notification ID (ObjectID String form)"      
+      },
       "type": "The notification type, either 'news' or 'merch' (String)",
       "date": "The date of when the notification was created in YYYY-MM-DD format (String)",
       "description": "The notification body itself (String)"
