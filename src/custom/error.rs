@@ -21,12 +21,16 @@ pub struct Error {
 
 #[derive(Debug, Clone)]
 pub enum CustomError {
+    NotFound(Status, String),
+    ServiceUnavailable(Status, String),
     Default(Status),
 }
 
 impl CustomError {
     fn get_http_status(&self) -> Status {
         match self {
+            CustomError::NotFound(status, _) => *status,
+            CustomError::ServiceUnavailable(status, _) => *status,
             CustomError::Default(status) => *status,
         }
     }
@@ -45,10 +49,32 @@ impl<'r> Responder<'r, 'static> for CustomError {
                 error: Error {
                     status: status.code,
                     message: status.reason().unwrap().to_string(),
-                    cat: format!("https://http.cat/{}.jpg", status),
+                    cat: format!("https://http.cat/{}.jpg", status.code),
                 },
             })
             .unwrap(),
+            CustomError::NotFound(status, details) => serde::json::to_string(&ErrorResponse {
+                error: Error {
+                    status: status.code,
+                    message: format!(
+                        "{} (No available {})",
+                        status.reason().unwrap().to_string(),
+                        details
+                    ),
+                    cat: format!("https://http.cat/{}.jpg", status.code),
+                },
+            })
+            .unwrap(),
+            CustomError::ServiceUnavailable(status, details) => {
+                serde::json::to_string(&ErrorResponse {
+                    error: Error {
+                        status: status.code,
+                        message: format!("{} ({})", status.reason().unwrap().to_string(), details),
+                        cat: format!("https://http.cat/{}.jpg", status.code),
+                    },
+                })
+                .unwrap()
+            }
         };
 
         Response::build()
