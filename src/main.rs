@@ -16,7 +16,7 @@ use rocket::{
 
 use crate::controllers::contactinfo_controller::get_contactinfo;
 use crate::controllers::location_controller::get_locations;
-use crate::controllers::notification_controller::get_notifications;
+use crate::controllers::notification_controller::{get_all_notifications, get_notification};
 use crate::controllers::service_controller::get_services;
 use crate::controllers::MongoRepo;
 use custom::error::CustomError;
@@ -74,7 +74,8 @@ async fn rocket() -> _ {
             "/",
             routes![
                 get_services,
-                get_notifications,
+                get_notification,
+                get_all_notifications,
                 get_contactinfo,
                 get_locations
             ],
