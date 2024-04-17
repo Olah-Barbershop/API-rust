@@ -8,8 +8,6 @@ use mongodb::{
     sync::{Client, Database},
 };
 
-pub const DB_CON_ERR: &str = "Couldn't connect to database";
-
 pub struct MongoRepo {
     db: Database,
 }

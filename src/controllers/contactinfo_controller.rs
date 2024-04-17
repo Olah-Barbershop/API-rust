@@ -1,6 +1,6 @@
 use crate::{
-    controllers::{MongoRepo, DB_CON_ERR},
-    custom::error::CustomError,
+    controllers::MongoRepo,
+    custom::error::{CustomError, DB_CON_ERR},
     models::contactinfo_model::Contactinfo,
 };
 use mongodb::{bson::doc, options::FindOptions, sync::Collection};

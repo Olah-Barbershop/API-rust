@@ -1,6 +1,6 @@
 use crate::{
-    controllers::{MongoRepo, DB_CON_ERR},
-    custom::error::CustomError,
+    controllers::MongoRepo,
+    custom::error::{CustomError, DB_CON_ERR},
     models::notification_model::Notification,
 };
 use mongodb::{
@@ -9,6 +9,7 @@ use mongodb::{
 };
 use rocket::{http::Status, serde::json::Json, State};
 
+#[allow(non_snake_case)]
 fn NOTIF_NOT_FOUND(id: String) -> String {
     format!("Notification with id {} not found", id)
 }

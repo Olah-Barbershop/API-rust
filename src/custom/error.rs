@@ -7,6 +7,8 @@ use rocket::{
 use serde::Serialize;
 use std::io::Cursor;
 
+pub const DB_CON_ERR: &str = "Couldn't connect to database";
+
 #[derive(Serialize)]
 pub struct ErrorResponse {
     error: Error,
