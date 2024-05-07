@@ -19,7 +19,7 @@ use crate::controllers::location_controller::get_locations;
 use crate::controllers::notification_controller::{get_all_notifications, get_notification};
 use crate::controllers::service_controller::get_services;
 use crate::controllers::MongoRepo;
-use custom::error::CustomError;
+use custom::error::{CustomError, DB_CON_ERR};
 
 #[catch(default)]
 fn default_catcher(status: Status, _: &Request) -> Option<CustomError> {
@@ -41,7 +41,7 @@ async fn rocket() -> _ {
 
     let db = match MongoRepo::init(db_name, uri) {
         Ok(db) => db,
-        Err(_) => panic!("Couldn't connect to database"),
+        Err(_) => panic!("{}", DB_CON_ERR),
     };
 
     pub struct CORS();
