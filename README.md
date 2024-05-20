@@ -21,7 +21,7 @@ DATABASE_NAME=[the name of your database]
 
 (Optional) Change the port in `Rocket.toml` if needed
 
-You'll need an SSL certificate. Add your certificate to `certs.pem` and you private key to `key.pem`.
+You'll need an SSL certificate. Add your certificate to `certs.pem` and your private key to `key.pem`.
 
 Start the server
 ```sh
